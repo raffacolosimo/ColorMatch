@@ -34,9 +34,9 @@ btnA_R = Button(14) # rosso
 btnA_G = Button(15) # verde
 btnA_B = Button(18) # blu
 # Pulsanti giocatore B
-btnB_R = Button(14) # rosso
-btnB_G = Button(15) # verde
-btnB_B = Button(18) # blu
+btnB_R = Button(25) # rosso
+btnB_G = Button(8) # verde
+btnB_B = Button(7) # blu
 # Punteggio dei giocatori
 pntA = 0
 pntB = 0
@@ -47,10 +47,11 @@ while True:
     # inizializza i flag di uscita
     timeout   = False # tempo non scaduto
     bothresp  = False # non hanno risposto entrambi
-    oneguess  = False # non c'e' uno che ha indovinato
 
     winA = False
     winB = False
+    pressA = False
+    pressB = False
 
     # 2. Estrazione semi
     semeMarker = random.choice(testo)
@@ -119,13 +120,14 @@ while True:
     rispostaB= -2 # indica risposta non data
     #risposta = raw_input("    risposta: ")
 
-    while oneguess or (not timeout) or (not bothresp): # ciclo attivo finche' uno indovina o non rispondono entrambi o non finisce il tempo:
+    while (winA or winB) or (pressA and pressB) or (not timeout) or (not bothresp): # ciclo attivo finche' uno indovina o rispondono entrambi o non finisce il tempo:
         time.sleep(0.1)
         tempoTrascorso = time.time() - startTime
         countDown = tempoMax - tempoTrascorso
         #conto = '%03.1f\r' % countDown
         #print conto,
-        if btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed:
+        if btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed: # il giocatore A ha risposto
+            pressA = True
             # controllo pressione multipla
             if (btnA_R.is_pressed and btnA_G.is_pressed) or (btnA_R.is_pressed and btnA_B.is_pressed) or (btnA_G.is_pressed and btnA_B.is_pressed):
                 rispostaA=-1 # ha imbrogliato
@@ -139,13 +141,13 @@ while True:
                 esitoA = esito(rispostaA)
                 if esitoA: # se ha indovinato si deve uscire dal ciclo
                     winA = True
-                    oneguess=True
-        if btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed:
+        if btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed: # il giocatore A ha risposto
+            pressB = True
             # controllo pressione multipla
             if (btnB_R.is_pressed and btnB_G.is_pressed) or (btnB_R.is_pressed and btnB_B.is_pressed) or (btnB_G.is_pressed and btnB_B.is_pressed):
                 rispostaB=-1 # ha imbrogliato
             else:
-                elif btnB_R.is_pressed:
+                if btnB_R.is_pressed:
                     rispostaB=0
                 elif btnB_G.is_pressed:
                     rispostaB=1
@@ -154,8 +156,7 @@ while True:
                 esitoB = esito(rispostaA)
                 if esitoB: # se ha indovinato si deve uscire dal ciclo
                     winB = True
-                    oneguess=True
-        if rispostaA <> -2 and rispostaB <> -2: # se entrambi hanno dato una risposta (anche errata)
+        if pressA and pressB: # se entrambi hanno dato una risposta (anche errata)
             bothresp=True
             break
         if tempoTrascorso > tempoMax:
@@ -168,11 +169,11 @@ while True:
     # 7. Calcola l'esito (Ok, No, Tempo scaduto)
     if winA:
         pntA += 1 # incrementa punteggio A
-        textpntA = '%d                  ' % pntA
     if winB:
         pntB += 1 # incrementa punteggio B
-        textpntB = '%d                  ' % pntB
-        textpntAB = textpntA + textpntB
+    textpntA = '%d                  ' % pntA
+    textpntB = '%d                  ' % pntB
+    textpntAB = textpntA + textpntB
 
     if winA and winB:
         printcolor('************************************'); print
@@ -186,7 +187,7 @@ while True:
         printcolor('************************************'); print
         printcolor('*   RISPOSTA ESATTA GIOCATORE B!   *'); print
         printcolor('************************************'); print
-    elif timeout:
+    elif bothresp and timeout:
         printcolor('************************************'); print
         printcolor('*           TEMPO SCADUTO!         *'); print
         printcolor('*              sveglia!            *'); print
