@@ -45,13 +45,12 @@ tempoMax= 5 #timeout
 
 while True:
     # inizializza i flag di uscita
-    timeout   = False # tempo non scaduto
-    bothresp  = False # non hanno risposto entrambi
-
-    winA = False
-    winB = False
-    pressA = False
-    pressB = False
+    timeout   = False # indica se il tempo e' scaduto
+    pressA = False    # indica se A ha risposto. Non si puo' dare piu' di una risposta
+    pressB = False    # indica se B ha risposto. Non si puo' dare piu' di una risposta
+    bothresp  = False # indica se hanno risposto entrambi
+    winA = False      # indica se A ha indovinato
+    winB = False      # indica se B ha indovinato
 
     # 2. Estrazione semi
     semeMarker = random.choice(testo)
@@ -120,13 +119,13 @@ while True:
     rispostaB= -2 # indica risposta non data
     #risposta = raw_input("    risposta: ")
 
-    while (winA or winB) or (pressA and pressB) or (not timeout) or (not bothresp): # ciclo attivo finche' uno indovina o rispondono entrambi o non finisce il tempo:
+    while (not((winA or winB))) or (not bothresp) or (not timeout) : # ciclo attivo finche' uno indovina o rispondono entrambi o non finisce il tempo:
         time.sleep(0.1)
         tempoTrascorso = time.time() - startTime
         countDown = tempoMax - tempoTrascorso
         #conto = '%03.1f\r' % countDown
         #print conto,
-        if btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed: # il giocatore A ha risposto
+        if (not pressA) and (btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
             pressA = True
             # controllo pressione multipla
             if (btnA_R.is_pressed and btnA_G.is_pressed) or (btnA_R.is_pressed and btnA_B.is_pressed) or (btnA_G.is_pressed and btnA_B.is_pressed):
@@ -141,7 +140,7 @@ while True:
                 esitoA = esito(rispostaA)
                 if esitoA: # se ha indovinato si deve uscire dal ciclo
                     winA = True
-        if btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed: # il giocatore A ha risposto
+        if (not pressB) and (btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
             pressB = True
             # controllo pressione multipla
             if (btnB_R.is_pressed and btnB_G.is_pressed) or (btnB_R.is_pressed and btnB_B.is_pressed) or (btnB_G.is_pressed and btnB_B.is_pressed):
@@ -163,10 +162,7 @@ while True:
             timeout=True
             break
 
-    if timeout:
-        print '    TEMPO SCADUTO!'
-
-    # 7. Calcola l'esito (Ok, No, Tempo scaduto)
+    # 7. Calcola l'esito
     if winA:
         pntA += 1 # incrementa punteggio A
     if winB:
@@ -175,31 +171,52 @@ while True:
     textpntB = '%d                  ' % pntB
     textpntAB = textpntA + textpntB
 
+    # possibili esiti:
+    # 1. risposta giusta contemporanea di entrambi
     if winA and winB:
         printcolor('************************************'); print
         printcolor('*  RISPOSTA ESATTA CONTEMPORANEA!  *'); print
         printcolor('************************************'); print
+    # 2. risposta giusta di A
     elif winA:
         printcolor('************************************'); print
         printcolor('*   RISPOSTA ESATTA GIOCATORE A!   *'); print
         printcolor('************************************'); print
+    # 3. risposta giusta di B
     elif winB:
         printcolor('************************************'); print
         printcolor('*   RISPOSTA ESATTA GIOCATORE B!   *'); print
         printcolor('************************************'); print
-    elif bothresp and timeout:
-        printcolor('************************************'); print
-        printcolor('*           TEMPO SCADUTO!         *'); print
-        printcolor('*              sveglia!            *'); print
-        printcolor('************************************'); print
+    # 4. nessuno ha risposto giusto
     else:
-        print      '------------------------------------'
-        print      '     TUTTE RISPOSTE SBAGLIATE       '
-        print      '             merdacce!              '
-        print      '------------------------------------'
+        # nessuno ha risposto
+        if ((not pressA) and (not pressB)):
+            printcolor('************************************'); print
+            printcolor('*           TEMPO SCADUTO!         *'); print
+            printcolor('*              sveglia!            *'); print
+            printcolor('************************************'); print
+        # ha risposto solo A, sbagliando
+        elif pressA:
+            print      '------------------------------------'
+            print      '       A: RISPOSTA SBAGLIATA        '
+            print      '       B: TEMPO SCADUTO             '
+            print      '------------------------------------'
+        # ha risposto solo B, sbagliando
+        elif pressB:
+            print      '------------------------------------'
+            print      '       A: TEMPO SCADUTO             '
+            print      '       B: RISPOSTA SBAGLIATA        '
+            print      '------------------------------------'
+        # hanno risposto entrambi, sbagliando
+        else:
+            print      '------------------------------------'
+            print      '     TUTTE RISPOSTE SBAGLIATE       '
+            print      '             merdacce!              '
+            print      '------------------------------------'
 
-        print
-        printcolor(textpntAB); print
+    # stampa i punteggi
+    print
+    printcolor(textpntAB); print
 
 
     time.sleep(3)
