@@ -163,21 +163,12 @@ while True:
                 print 'B ha scelto ' + nome[rispostaB] 
                 if esitoB: # se ha indovinato si deve uscire dal ciclo
                     winB = True
-<<<<<<< .mine
                     oneguess = True
         
         # condizioni di uscita
         if oneguess:          # se uno ha indovinato
             break
         if pressA and pressB: # se entrambi hanno dato una risposta errata
-=======
-                    oneguess = True
-		
-		# condizioni di uscita
-        if oneguess:          # se uno ha indovinato
-            break
-        if pressA and pressB: # se entrambi hanno dato una risposta errata
->>>>>>> .r9
             bothresp=True
             break
         if tempoTrascorso > tempoMax: # se il tempo e' scaduto
