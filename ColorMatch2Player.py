@@ -40,8 +40,8 @@ btnB_B = Button(7) # blu
 # Punteggio dei giocatori
 pntA = 0
 pntB = 0
-
-tempoMax= 5 #timeout
+# durata del singolo test
+tempoMax= 5
 
 while True:
     # inizializza i flag di uscita
