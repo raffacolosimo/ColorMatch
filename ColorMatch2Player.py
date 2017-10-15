@@ -21,7 +21,7 @@ from gpiozero import Button
 
 # 1. Impostazione variabili matrici e vettori
 testo = [0, 1, 2] # lista dei testi
-nome  = [' ROSSO ', ' VERDE ', ' +BLU+ ']
+nome  = ['   ROSSO   ', '   VERDE   ', '   +BLU+   ']
 var = [0,1] # lista variazioni del colore della scritta
 disp = [0,1,2,3,4,5] # lista della disposizione da visualizzare
 #                 0        1        2
@@ -40,11 +40,13 @@ btnB_B = Button(7) # blu
 # Punteggio dei giocatori
 pntA = 0
 pntB = 0
+# punteggio da raggiungere
+pntMax = 3
 # durata del singolo test
 tempoMax= 5
 
 while True:
-    # inizializza i flag di uscita
+    # inizializza i flag di uscita di ogni test
     timeout   = False # indica se il tempo e' scaduto
     pressA = False    # indica se A ha risposto. Non si puo' dare piu' di una risposta
     pressB = False    # indica se B ha risposto. Non si puo' dare piu' di una risposta
@@ -87,9 +89,11 @@ while True:
         print colorstring,
 
     print
-    printcolor('**********************', semeMarker)
+    printcolor('************************************', semeMarker)
     print
-    print '----------------------'
+    printcolor('************************************', semeMarker)
+    print
+    print      '------------------------------------'
     elenco = disposizione[semeDisposizione]
     nome0 = nome[elenco[0]]
     nome1 = nome[elenco[1]]
@@ -101,11 +105,11 @@ while True:
     printcolor(nome1, colore1)
     printcolor(nome2, colore2)
     print
-    print '----------------------'
+    print      '------------------------------------'
     print
-    printcolor('   0   ')
-    printcolor('   1   ')
-    printcolor('   2   ')
+    printcolor('     0     ')
+    printcolor(            '     1     ')
+    printcolor(                        '     2     ')
     print
     print nome[0],nome[1],nome[2]
 
@@ -159,12 +163,21 @@ while True:
                 print 'B ha scelto ' + nome[rispostaB] 
                 if esitoB: # se ha indovinato si deve uscire dal ciclo
                     winB = True
+<<<<<<< .mine
+                    oneguess = True
+        
+        # condizioni di uscita
+        if oneguess:          # se uno ha indovinato
+            break
+        if pressA and pressB: # se entrambi hanno dato una risposta errata
+=======
                     oneguess = True
 		
 		# condizioni di uscita
         if oneguess:          # se uno ha indovinato
             break
         if pressA and pressB: # se entrambi hanno dato una risposta errata
+>>>>>>> .r9
             bothresp=True
             break
         if tempoTrascorso > tempoMax: # se il tempo e' scaduto
@@ -227,11 +240,21 @@ while True:
     print
     printcolor(textpntAB); print
 
-
-    time.sleep(3)
-    print
-    print '        Riprovate'
-    time.sleep(1)
+    if pntA==pntMax or pntB==pntMax:
+        time.sleep(0.5)
+        print
+        print     '         PARTITA TERMINATA'
+        if pntA==pntMax:
+            print '        VINCE IL GIOCATORE A '
+        else:
+            print '        VINCE IL GIOCATORE B '
+        time.sleep(3)
+        break
+    else:
+        time.sleep(3)
+        print
+        print     '             Pronti....'
+        time.sleep(1)
 
 
 
