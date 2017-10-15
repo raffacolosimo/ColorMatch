@@ -51,6 +51,7 @@ while True:
     bothresp  = False # indica se hanno risposto entrambi
     winA = False      # indica se A ha indovinato
     winB = False      # indica se B ha indovinato
+    oneguess = False  # indica se c'e' uno che ha indovinato
 
     # 2. Estrazione semi
     semeMarker = random.choice(testo)
@@ -119,8 +120,8 @@ while True:
     rispostaB= -2 # indica risposta non data
     #risposta = raw_input("    risposta: ")
 
-    while (not((winA or winB))) or (not bothresp) or (not timeout) : # ciclo attivo finche' uno indovina o rispondono entrambi o non finisce il tempo:
-        time.sleep(0.1)
+    while True: # ciclo attivo finche' uno indovina o rispondono entrambi o non finisce il tempo:
+        time.sleep(0.05)
         tempoTrascorso = time.time() - startTime
         countDown = tempoMax - tempoTrascorso
         #conto = '%03.1f\r' % countDown
@@ -138,8 +139,10 @@ while True:
                 elif btnA_B.is_pressed:
                     rispostaA=2
                 esitoA = esito(rispostaA)
+                print 'A ha scelto ' + nome[rispostaA] 
                 if esitoA: # se ha indovinato si deve uscire dal ciclo
                     winA = True
+                    oneguess = True
         if (not pressB) and (btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
             pressB = True
             # controllo pressione multipla
@@ -152,23 +155,29 @@ while True:
                     rispostaB=1
                 elif btnB_B.is_pressed:
                     rispostaB=2
-                esitoB = esito(rispostaA)
+                esitoB = esito(rispostaB)
+                print 'B ha scelto ' + nome[rispostaB] 
                 if esitoB: # se ha indovinato si deve uscire dal ciclo
                     winB = True
-        if pressA and pressB: # se entrambi hanno dato una risposta (anche errata)
+                    oneguess = True
+		
+		# condizioni di uscita
+        if oneguess:          # se uno ha indovinato
+            break
+        if pressA and pressB: # se entrambi hanno dato una risposta errata
             bothresp=True
             break
-        if tempoTrascorso > tempoMax:
+        if tempoTrascorso > tempoMax: # se il tempo e' scaduto
             timeout=True
             break
-
+             
     # 7. Calcola l'esito
     if winA:
         pntA += 1 # incrementa punteggio A
     if winB:
         pntB += 1 # incrementa punteggio B
-    textpntA = '%d                  ' % pntA
-    textpntB = '%d                  ' % pntB
+    textpntA = '%d                 ' % pntA
+    textpntB = '                 %d' % pntB
     textpntAB = textpntA + textpntB
 
     # possibili esiti:
@@ -196,18 +205,18 @@ while True:
             printcolor('*              sveglia!            *'); print
             printcolor('************************************'); print
         # ha risposto solo A, sbagliando
-        elif pressA:
+        elif pressA and not pressB:
             print      '------------------------------------'
             print      '       A: RISPOSTA SBAGLIATA        '
             print      '       B: TEMPO SCADUTO             '
             print      '------------------------------------'
         # ha risposto solo B, sbagliando
-        elif pressB:
+        elif pressB and not pressA:
             print      '------------------------------------'
             print      '       A: TEMPO SCADUTO             '
             print      '       B: RISPOSTA SBAGLIATA        '
             print      '------------------------------------'
-        # hanno risposto entrambi, sbagliando
+        # hanno risposto entrambi sbagliando
         else:
             print      '------------------------------------'
             print      '     TUTTE RISPOSTE SBAGLIATE       '
