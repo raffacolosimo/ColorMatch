@@ -49,7 +49,7 @@ pntMax = 3
 # durata del singolo test
 tempoMax= 5
 
-# 1.a impostazioni per il ledmatrix 
+# 1.a impostazioni per il ledmatrix
 # opzioni
 options = RGBMatrixOptions()
 options.hardware_mapping = 'adafruit-hat'
@@ -85,11 +85,11 @@ def marker(mrkposH, mrkposV, mrkL, mrkH, mrkcol):
         graphics.DrawLine(offline_matrix, mrkposH, lineY, lineEndX, lineY, mrkcol)
 #TIME
 RGBtimePos = [[14,27], [39,27]]     # posizioni dei due segnatempo
-RGBtimeTime = [tempoMax, tempoMax]  # tempi dei due contatempo
-RGBtimeStr = ['%03.1f' % RGBtimeTime[1], '%03.1f' % RGBtimeTime[2]] # tempi in formato stringa
 RGBtimeColNrm  = graphics.Color(180, 180, 180)
-RGBtimeColErr  = graphics.Color( 80,  80,  80) 
+RGBtimeColErr  = graphics.Color( 80,  80,  80)
 RGBtimeColWin  = graphics.Color(255, 255, 255)
+RGBtimeUlPos = [[14,28], [39,28]] # sottolineatura dopo pressione del pulsante
+RGBtimeUlLng  = 9
 #SCORE
 RGBscorePos = [[0,29], [56,29]]     # posizioni dei punteggi
 RGBscoreColNrm = graphics.Color(220, 220, 220)
@@ -99,14 +99,14 @@ RGBchoicePos = [[0,16], [56,16]]    # posizioni dei marcatori di scelta
 RGBchoiceLH  = [7,4]
 # il colore e' legato alla scelta del giocatore
 def choice(side, color):
-    if side=='Sx':
+    if   side=='Sx':
         marker(RGBchoicePos[0][0], RGBchoicePos[0][1], RGBchoiceLH[0], RGBchoiceLH[1], color)
     elif side=='Dx':
         marker(RGBchoicePos[1][0], RGBchoicePos[1][1], RGBchoiceLH[0], RGBchoiceLH[1], color)
     else:
         print 'errore'
 
-while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fine)
+while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo alla fine)
     # inizializza i flag di uscita di ogni test
     timeout   = False # indica se il tempo e' scaduto
     pressA    = False # indica se A ha risposto. Non si puo' dare piu' di una risposta
@@ -190,7 +190,7 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
     tempoTrascorso=0
     countDown = tempoMax
     startTime=time.time() # invece di far partire il timer prendo il tempo di inizio
-    
+
     # 6. Attendi la risposta
     print
     #print countDown,
@@ -198,10 +198,10 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
     rispostaB= -2 # indica risposta non data
     #risposta = raw_input("    risposta: ")
 
-    while True: # Ciclo PUNTO. Uscita quando uno indovina o quando rispondono entrambi o quando finisce il tempo (controllo alla fine)
+    while True: # Ciclo del PUNTO. Uscita quando uno indovina o quando rispondono entrambi o quando finisce il tempo (controllo alla fine)
         # pulisce la matrice offline da comporre
         offline_matrix.Clear()
-        
+
         #aggiornamento tempo
         tempoTrascorso = time.time() - startTime
         countDown = tempoMax - tempoTrascorso
@@ -209,7 +209,7 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
         #print conto,
 
         if (not pressA) and (btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
-            pressA = True
+            pressA = True # A ha risposto
             # controllo pressione multipla
             if (btnA_R.is_pressed and btnA_G.is_pressed) or (btnA_R.is_pressed and btnA_B.is_pressed) or (btnA_G.is_pressed and btnA_B.is_pressed):
                 rispostaA=-1 # ha imbrogliato
@@ -224,7 +224,7 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
                 elif btnA_B.is_pressed:
                     rispostaA=2
                 esitoA = esito(rispostaA)
-                print 'A ha scelto ' + nome[rispostaA] 
+                print 'A ha scelto ' + nome[rispostaA]
                 # Choice RGB
                 choiceColA = RGBColor[rispostaA])
                 if esitoA: # se ha indovinato si deve uscire dal ciclo
@@ -232,7 +232,7 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
                     oneguess = True
                     RGBtimeColorA = RGBtimeColWin
                     RGBscoreColorA = RGBscoreColWin
-                    
+
         if (not pressB) and (btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
             pressB = True
             # controllo pressione multipla
@@ -248,7 +248,7 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
                 elif btnB_B.is_pressed:
                     rispostaB=2
                 esitoB = esito(rispostaB)
-                print 'B ha scelto ' + nome[rispostaB] 
+                print 'B ha scelto ' + nome[rispostaB]
                 # Choice RGB
                 choiceColB = RGBColor[rispostaB])
                 if esitoB: # se ha indovinato si deve uscire dal ciclo
@@ -256,6 +256,11 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
                     oneguess = True
                     RGBtimeColorB = RGBtimeColWin
                     RGBscoreColorB = RGBscoreColWin
+        # aggiornamento tempi dei due giocatori
+        if not pressA:
+            RGBtimeStrA = str(countDown) # aggiorna il tempo A se non ha premuto pulsanti
+        if not pressB:
+            RGBtimeStrB = str(countDown) # aggiorna il tempo B se non ha premuto pulsanti
 
         # RGB MATRIX
         # disegno elementi non variabili durante un punto
@@ -267,23 +272,25 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
         marker(RGBmrkPos[0], RGBmrkPos[1], RGBmrkLH[0], RGBmrkLH[1], RGBColor[semeColore])
         # disegno elementi variabili durante un punto
         #Time Sx e Dx
-        graphics.DrawText(offline_matrix, font3, RGBtimePos[0][0], RGBtimePos[0][1], RGBtimeColorA, RGBtimeStr[0])
-        graphics.DrawText(offline_matrix, font3, RGBtimePos[1][0], RGBtimePos[1][1], RGBtimeColorB, RGBtimeStr[1])
+        graphics.DrawText(offline_matrix, font3, RGBtimePos[0][0], RGBtimePos[0][1], RGBtimeColorA, RGBtimeStrA)
+        graphics.DrawText(offline_matrix, font3, RGBtimePos[1][0], RGBtimePos[1][1], RGBtimeColorB, RGBtimeStrA)
+        #sottolineatura tempo
+        if pressA:
+            graphics.DrawLine(offline_matrix, RGBtimeUlPos[0][0], RGBtimeUlPos[0][1], RGBtimeUlPos[0][0]+RGBtimeUlLng, RGBtimeUlPos[0][1], RGBtimeColorA)
+        if pressB:
+            graphics.DrawLine(offline_matrix, RGBtimeUlPos[0][0], RGBtimeUlPos[1][1], RGBtimeUlPos[1][0]+RGBtimeUlLng, RGBtimeUlPos[1][1], RGBtimeColorB)
         #Score Sx e Dx
         graphics.DrawText(offline_matrix, font4, RGBscorePos[0][0], RGBscorePos[0][1], RGBscoreColNrm, str(pntA))
         graphics.DrawText(offline_matrix, font4, RGBscorePos[1][0], RGBscorePos[1][1], RGBscoreColNrm, str(pntB))
         #Choice Sx e Dx
-        choice('Sx', choiceColA) 
-        choice('Dx', choiceColB) 
+        choice('Sx', choiceColA)
+        choice('Dx', choiceColB)
 
         # aggiornamento immagine sul display
         offline_matrix = matrix.SwapOnVSync(offline_matrix)
 
-''' QUESTA ZONA QUI
-'''
-
+        # attesa, da tarare
         time.sleep(0.05) # spostare alla fine
-
 
         # condizioni di uscita
         if oneguess:          # se uno ha indovinato
@@ -294,7 +301,7 @@ while True: # ciclo PARTITA. Uscita quando si vince la partita (controlo alla fi
         if tempoTrascorso > tempoMax: # se il tempo e' scaduto
             timeout=True
             break
-             
+
     # 7. Calcola l'esito
     if winA:
         pntA += 1 # incrementa punteggio A
