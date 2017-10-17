@@ -72,6 +72,12 @@ RGBColor = [graphics.Color(255, 0, 0), graphics.Color(0, 255, 0), graphics.Color
 #COLORI-TESTI
 RGBtxtPos = [[0, 7],[34, 7], [17, 16]                      # posizioni H-V delle scritte dei colori
 RGBtxtTxt = [nome[0].strip, nome[1].strip, nome[2].strip]  # nomi dei colori (R-G-B) presi da quelli per la console ma senza gli spazi
+RGBcolore0 = RGBColor[0]
+RGBcolore1 = RGBColor[1]
+RGBcolore2 = RGBColor[2]
+RGBnome0 = RGBtxtTxt[0]
+RGBnome1 = RGBtxtTxt[1]
+RGBnome2 = RGBtxtTxt[2]
 # i colori sono legati alle estrazioni dei semi
 #MARKER
 RGBmrkPos = [27, 31]
@@ -88,6 +94,8 @@ RGBtimePos = [[14,27], [39,27]]     # posizioni dei due segnatempo
 RGBtimeColNrm  = graphics.Color(180, 180, 180)
 RGBtimeColErr  = graphics.Color( 80,  80,  80)
 RGBtimeColWin  = graphics.Color(255, 255, 255)
+RGBtimeStrA = str(tempoMax)
+RGBtimeStrB = str(tempoMax)
 RGBtimeUlPos = [[14,28], [39,28]] # sottolineatura dopo pressione del pulsante
 RGBtimeUlLng  = 9
 #SCORE
@@ -97,7 +105,8 @@ RGBscoreColWin = graphics.Color(255, 255, 255)
 #SCELTA (pulsante premuto dal giocatore)
 RGBchoicePos = [[0,16], [56,16]]    # posizioni dei marcatori di scelta
 RGBchoiceLH  = [7,4]
-# il colore e' legato alla scelta del giocatore
+choiceColA = '' # il colore e' legato alla scelta del giocatore
+choiceColB = ''
 def choice(side, color):
     if   side=='Sx':
         marker(RGBchoicePos[0][0], RGBchoicePos[0][1], RGBchoiceLH[0], RGBchoiceLH[1], color)
@@ -105,6 +114,33 @@ def choice(side, color):
         marker(RGBchoicePos[1][0], RGBchoicePos[1][1], RGBchoiceLH[0], RGBchoiceLH[1], color)
     else:
         print 'errore'
+def setRGBpart1():
+    # RGB MATRIX
+    # disegno elementi non variabili durante un punto
+    # Colori-Nomi
+    graphics.DrawText(offline_matrix, font1, RGBtxtPos[0][0], RGBtxtPos[0][1], RGBcolore0, RGBnome0)
+    graphics.DrawText(offline_matrix, font1, RGBtxtPos[1][0], RGBtxtPos[1][1], RGBcolore1, RGBnome1)
+    graphics.DrawText(offline_matrix, font1, RGBtxtPos[2][0], RGBtxtPos[2][1], RGBcolore2, RGBnome2)
+    #Marker
+    marker(RGBmrkPos[0], RGBmrkPos[1], RGBmrkLH[0], RGBmrkLH[1], RGBColor[semeColore])
+
+def setRGBpart2():
+    # disegno elementi variabili durante un punto
+    #Time Sx e Dx
+    graphics.DrawText(offline_matrix, font3, RGBtimePos[0][0], RGBtimePos[0][1], RGBtimeColorA, RGBtimeStrA)
+    graphics.DrawText(offline_matrix, font3, RGBtimePos[1][0], RGBtimePos[1][1], RGBtimeColorB, RGBtimeStrA)
+    #sottolineatura tempo e marcatura di scelta
+    if pressA:
+        graphics.DrawLine(offline_matrix, RGBtimeUlPos[0][0], RGBtimeUlPos[0][1], RGBtimeUlPos[0][0]+RGBtimeUlLng, RGBtimeUlPos[0][1], RGBtimeColorA)
+        #Choice Sx
+        choice('Sx', choiceColA)
+    if pressB:
+        graphics.DrawLine(offline_matrix, RGBtimeUlPos[0][0], RGBtimeUlPos[1][1], RGBtimeUlPos[1][0]+RGBtimeUlLng, RGBtimeUlPos[1][1], RGBtimeColorB)
+        #Choice Dx
+        choice('Dx', choiceColB)
+    #Score Sx e Dx
+    graphics.DrawText(offline_matrix, font4, RGBscorePos[0][0], RGBscorePos[0][1], RGBscoreColNrm, str(pntA))
+    graphics.DrawText(offline_matrix, font4, RGBscorePos[1][0], RGBscorePos[1][1], RGBscoreColNrm, str(pntB))
 
 while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo alla fine)
     # inizializza i flag di uscita di ogni test
@@ -200,7 +236,6 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
 
     while True: # Ciclo del PUNTO. Uscita quando uno indovina o quando rispondono entrambi o quando finisce il tempo (controllo alla fine)
         # pulisce la matrice offline da comporre
-        offline_matrix.Clear()
 
         #aggiornamento tempo
         tempoTrascorso = time.time() - startTime
@@ -262,35 +297,14 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
         if not pressB:
             RGBtimeStrB = str(countDown) # aggiorna il tempo B se non ha premuto pulsanti
 
-        # RGB MATRIX
-        # disegno elementi non variabili durante un punto
-        # Colori-Nomi
-        graphics.DrawText(offline_matrix, font1, RGBtxtPos[0][0], RGBtxtPos[0][1], RGBcolore0, RGBnome0)
-        graphics.DrawText(offline_matrix, font1, RGBtxtPos[1][0], RGBtxtPos[1][1], RGBcolore1, RGBnome1)
-        graphics.DrawText(offline_matrix, font1, RGBtxtPos[2][0], RGBtxtPos[2][1], RGBcolore2, RGBnome2)
-        #Marker
-        marker(RGBmrkPos[0], RGBmrkPos[1], RGBmrkLH[0], RGBmrkLH[1], RGBColor[semeColore])
-        # disegno elementi variabili durante un punto
-        #Time Sx e Dx
-        graphics.DrawText(offline_matrix, font3, RGBtimePos[0][0], RGBtimePos[0][1], RGBtimeColorA, RGBtimeStrA)
-        graphics.DrawText(offline_matrix, font3, RGBtimePos[1][0], RGBtimePos[1][1], RGBtimeColorB, RGBtimeStrA)
-        #sottolineatura tempo
-        if pressA:
-            graphics.DrawLine(offline_matrix, RGBtimeUlPos[0][0], RGBtimeUlPos[0][1], RGBtimeUlPos[0][0]+RGBtimeUlLng, RGBtimeUlPos[0][1], RGBtimeColorA)
-        if pressB:
-            graphics.DrawLine(offline_matrix, RGBtimeUlPos[0][0], RGBtimeUlPos[1][1], RGBtimeUlPos[1][0]+RGBtimeUlLng, RGBtimeUlPos[1][1], RGBtimeColorB)
-        #Score Sx e Dx
-        graphics.DrawText(offline_matrix, font4, RGBscorePos[0][0], RGBscorePos[0][1], RGBscoreColNrm, str(pntA))
-        graphics.DrawText(offline_matrix, font4, RGBscorePos[1][0], RGBscorePos[1][1], RGBscoreColNrm, str(pntB))
-        #Choice Sx e Dx
-        choice('Sx', choiceColA)
-        choice('Dx', choiceColB)
-
-        # aggiornamento immagine sul display
+        # scrivi sul display RGB composizione all'interno del ciclo del punto
+        offline_matrix.Clear()
+        setRGBpart1()
+        setRGBpart2()
         offline_matrix = matrix.SwapOnVSync(offline_matrix)
 
         # attesa, da tarare
-        time.sleep(0.05) # spostare alla fine
+        time.sleep(0.05)
 
         # condizioni di uscita
         if oneguess:          # se uno ha indovinato
