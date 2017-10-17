@@ -5,17 +5,19 @@
 # Bisogna individuare il colore di una scritta che riporta il nome di un altro colore
 
 # 0. Impostazione librerie
+#   0.a Animazione iniziale. COLOR MATCH - Premi per un tasto per iniziare
+#   0.b Schermata di partenza: Pronti? 3-2-1
 # 1. Impostazione matrici e vettori
-#  1.a impostazione parametri per Led matrix
+#   1.a impostazione parametri e funzioni per Led matrix
 # 2. Estrazione semi
 # 3. Calcolo risultato
-# 5. Fai partire il timer
 # 4. Visualizza marker e disposizione su console
-#  4a Idem su RGB matrix
+# 5. Fai partire il timer
 # 6. Attendi la risposta
-#  6a aggiorna RGB matrix
+#   6a Schermata RGB matrix durante il punto (tempo che scorre, risposte)
 # 7. Calcola l'esito e risportalo su console
-#  7a Visualizza su RGB matrix
+#   7a Schermata esito su RGB matrix: Vince A-B, Pari!, A: risposta errata B: tempo scaduto (o viceversa), TEMPO SCADUTO!
+# 8 Se la partita non e' finita torna al punto 0.b
 
 #0. Importazione librerie
 import random  # per estrarre a caso i colori e le combinazioni
@@ -48,6 +50,20 @@ pntB = 0
 pntMax = 3
 # durata del singolo test
 tempoMax= 5
+# flag di pressione pulsante
+pressA = False # indica se ha risposto. Non si puo' dare piu' di una risposta
+pressB = False 
+winA = False
+winB = False
+
+# esito e risultato
+risultato = '' # varia in ogni punto
+# definizione della funzione esito che indice se la scelta fatta e' giusta
+def esito(resp):
+    if int(resp)==risultato:
+        return True
+    else:
+        return False
 
 # 1.a impostazioni per il ledmatrix
 # opzioni
@@ -64,7 +80,7 @@ font2 = graphics.Font()
 font3 = graphics.Font()
 font4 = graphics.Font()
 font1.LoadFont("./fonts/6x10.bdf")  # per nomi dei colori
-font2.LoadFont("./fonts/10x20.bdf") # per marker o punteggi
+font2.LoadFont("./fonts/5x7.bdf")   # per messaggio di esito
 font3.LoadFont("./fonts/4x6.bdf")   # per i tempi
 font4.LoadFont("./fonts/9x18.bdf")  # per punteggi
 #COLORI GENERICI
@@ -72,13 +88,13 @@ RGBColor = [graphics.Color(255, 0, 0), graphics.Color(0, 255, 0), graphics.Color
 #COLORI-TESTI
 RGBtxtPos = [[0, 7],[34, 7], [17, 16]                      # posizioni H-V delle scritte dei colori
 RGBtxtTxt = [nome[0].strip, nome[1].strip, nome[2].strip]  # nomi dei colori (R-G-B) presi da quelli per la console ma senza gli spazi
-RGBcolore0 = RGBColor[0]
+# i colori sono legati alle estrazioni dei semi
+RGBcolore0 = RGBColor[0] # solo per inizializzare il tipo
 RGBcolore1 = RGBColor[1]
 RGBcolore2 = RGBColor[2]
-RGBnome0 = RGBtxtTxt[0]
+RGBnome0 = RGBtxtTxt[0]  # solo per inizializzare 
 RGBnome1 = RGBtxtTxt[1]
 RGBnome2 = RGBtxtTxt[2]
-# i colori sono legati alle estrazioni dei semi
 #MARKER
 RGBmrkPos = [27, 31]
 RGBmrkLH  = [8, 14]
@@ -94,6 +110,8 @@ RGBtimePos = [[14,27], [39,27]]     # posizioni dei due segnatempo
 RGBtimeColNrm  = graphics.Color(180, 180, 180)
 RGBtimeColErr  = graphics.Color( 80,  80,  80)
 RGBtimeColWin  = graphics.Color(255, 255, 255)
+RGBtimeColorA = '' # il colore e' legato all'esito
+RGBtimeColorB = ''
 RGBtimeStrA = str(tempoMax)
 RGBtimeStrB = str(tempoMax)
 RGBtimeUlPos = [[14,28], [39,28]] # sottolineatura dopo pressione del pulsante
@@ -102,6 +120,8 @@ RGBtimeUlLng  = 9
 RGBscorePos = [[0,29], [56,29]]     # posizioni dei punteggi
 RGBscoreColNrm = graphics.Color(220, 220, 220)
 RGBscoreColWin = graphics.Color(255, 255, 255)
+RGBscoreColorA = RGBscoreColNrm
+RGBscoreColorB = RGBscoreColNrm
 #SCELTA (pulsante premuto dal giocatore)
 RGBchoicePos = [[0,16], [56,16]]    # posizioni dei marcatori di scelta
 RGBchoiceLH  = [7,4]
@@ -113,7 +133,7 @@ def choice(side, color):
     elif side=='Dx':
         marker(RGBchoicePos[1][0], RGBchoicePos[1][1], RGBchoiceLH[0], RGBchoiceLH[1], color)
     else:
-        print 'errore'
+        print 'errore in choice'
 def setRGBpart1():
     # RGB MATRIX
     # disegno elementi non variabili durante un punto
@@ -123,7 +143,6 @@ def setRGBpart1():
     graphics.DrawText(offline_matrix, font1, RGBtxtPos[2][0], RGBtxtPos[2][1], RGBcolore2, RGBnome2)
     #Marker
     marker(RGBmrkPos[0], RGBmrkPos[1], RGBmrkLH[0], RGBmrkLH[1], RGBColor[semeColore])
-
 def setRGBpart2():
     # disegno elementi variabili durante un punto
     #Time Sx e Dx
@@ -139,8 +158,123 @@ def setRGBpart2():
         #Choice Dx
         choice('Dx', choiceColB)
     #Score Sx e Dx
-    graphics.DrawText(offline_matrix, font4, RGBscorePos[0][0], RGBscorePos[0][1], RGBscoreColNrm, str(pntA))
-    graphics.DrawText(offline_matrix, font4, RGBscorePos[1][0], RGBscorePos[1][1], RGBscoreColNrm, str(pntB))
+    graphics.DrawText(offline_matrix, font4, RGBscorePos[0][0], RGBscorePos[0][1], RGBscoreColorA, str(pntA))
+    graphics.DrawText(offline_matrix, font4, RGBscorePos[1][0], RGBscorePos[1][1], RGBscoreColorB, str(pntB))
+def RGBesitoPnt():
+    # 1. risposta giusta contemporanea di entrambi
+    if winA and winB:
+        RGBesitoTxt = 'PARI MERITO!'
+        RGBesitoPosH = 63 - int(len(RGBesitoTxt)/2)
+        graphics.DrawText(offline_matrix, font2, RGBesitoPosH, 10, RGBtimeColWin, RGBesitoTxt)
+    # 2. risposta giusta di A
+    elif winA:
+        RGBesitoTxt = 'VINCE A!'
+        RGBesitoPosH = 63 - int(len(RGBesitoTxt)/2)
+        graphics.DrawText(offline_matrix, font2, RGBesitoPosH, 10, RGBtimeColWin, RGBesitoTxt)
+    # 3. risposta giusta di B
+    elif winB:
+        RGBesitoTxt = 'VINCE B!'
+        RGBesitoPosH = 63 - int(len(RGBesitoTxt)/2)
+        graphics.DrawText(offline_matrix, font2, RGBesitoPosH, 10, RGBtimeColWin, RGBesitoTxt)
+    # 4. nessuno ha risposto giusto
+    else:
+        # nessuno ha risposto
+        if ((not pressA) and (not pressB)):
+            RGBesitoTxt1 = 'TEMPO SCADUTO!!!'
+            RGBesitoPosH1 = 63 - int(len(RGBesitoTxt1)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH1, 10, RGBtimeColNrm, RGBesitoTxt1)
+            RGBesitoTxt2 = 'Sveglia!'
+            RGBesitoPosH2 = 63 - int(len(RGBesitoTxt2)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH2, 10, RGBtimeColNrm, RGBesitoTxt2)
+        # ha risposto solo A, sbagliando
+        elif pressA and not pressB:
+            RGBesitoTxt1 = 'A: scelta errata'
+            RGBesitoPosH1 = 63 - int(len(RGBesitoTxt1)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH1, 10, RGBtimeColNrm, RGBesitoTxt1)
+            RGBesitoTxt2 = 'B: tempo scaduto'
+            RGBesitoPosH2 = 63 - int(len(RGBesitoTxt2)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH2, 10, RGBtimeColNrm, RGBesitoTxt2)
+        # ha risposto solo B, sbagliando
+        elif pressB and not pressA:
+            RGBesitoTxt1 = 'A: tempo scaduto'
+            RGBesitoPosH1 = 63 - int(len(RGBesitoTxt1)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH1, 10, RGBtimeColNrm, RGBesitoTxt1)
+            RGBesitoTxt2 = 'B: scelta errata'
+            RGBesitoPosH2 = 63 - int(len(RGBesitoTxt2)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH2, 10, RGBtimeColNrm, RGBesitoTxt2)
+        # hanno risposto entrambi sbagliando
+        else:
+            RGBesitoTxt1 = 'TUTTO SBAGLIATO'
+            RGBesitoPosH1 = 63 - int(len(RGBesitoTxt1)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH1, 10, RGBtimeColNrm, RGBesitoTxt1)
+            RGBesitoTxt2 = 'Concentratevi!'
+            RGBesitoPosH2 = 63 - int(len(RGBesitoTxt2)/2)
+            graphics.DrawText(offline_matrix, font3, RGBesitoPosH2, 10, RGBtimeColNrm, RGBesitoTxt2)
+
+def CSLesitoPnt():
+    # 1. risposta giusta contemporanea di entrambi
+    if winA and winB:
+        printcolor('************************************'); print
+        printcolor('*  RISPOSTA ESATTA CONTEMPORANEA!  *'); print
+        printcolor('************************************'); print
+    # 2. risposta giusta di A
+    elif winA:
+        printcolor('************************************'); print
+        printcolor('*   RISPOSTA ESATTA GIOCATORE A!   *'); print
+        printcolor('************************************'); print
+    # 3. risposta giusta di B
+    elif winB:
+        printcolor('************************************'); print
+        printcolor('*   RISPOSTA ESATTA GIOCATORE B!   *'); print
+        printcolor('************************************'); print
+    # 4. nessuno ha risposto giusto
+    else:
+        # nessuno ha risposto
+        if ((not pressA) and (not pressB)):
+            printcolor('************************************'); print
+            printcolor('*           TEMPO SCADUTO!         *'); print
+            printcolor('*              sveglia!            *'); print
+            printcolor('************************************'); print
+            time.sleep(1)
+        # ha risposto solo A, sbagliando
+        elif pressA and not pressB:
+            print      '------------------------------------'
+            print      '       A: RISPOSTA SBAGLIATA        '
+            print      '       B: TEMPO SCADUTO             '
+            print      '------------------------------------'
+            time.sleep(1)
+        # ha risposto solo B, sbagliando
+        elif pressB and not pressA:
+            print      '------------------------------------'
+            print      '       A: TEMPO SCADUTO             '
+            print      '       B: RISPOSTA SBAGLIATA        '
+            print      '------------------------------------'
+            time.sleep(1)
+        # hanno risposto entrambi sbagliando
+        else:
+            print      '------------------------------------'
+            print      '     TUTTE RISPOSTE SBAGLIATE       '
+            print      '             merdacce!              '
+            print      '------------------------------------'
+            time.sleep(1)
+    # stampa i punteggi
+    textpntA = '%d                 ' % pntA
+    textpntB = '                 %d' % pntB
+    textpntAB = textpntA + textpntB
+    print
+    printcolor(textpntAB); print
+
+def printcolor(text, color=7): # funzione per stampare testo a colori sulla console
+    if color==0:
+        colorindex = 1
+    if color==1:
+        colorindex = 2
+    if color==2:
+        colorindex = 4
+    if color==7:
+        colorindex = 7
+    colorstring  ='\033[1;3%dm%s\033[1;m' % (colorindex, text)
+    print colorstring,
 
 while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo alla fine)
     # inizializza i flag di uscita di ogni test
@@ -156,35 +290,14 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
     semeMarker = random.choice(testo)
     semeColore = random.choice(var)
     semeDisposizione = random.choice(disp)
-    #print 'SemeMarker: ' + str(semeMarker)
-    #print 'SemeColore: ' + str(semeColore)
-    #print 'SemeDisposizione: ' + str(semeDisposizione)
 
     # 3. Calcolo risultato
     risultato = testoEColore [semeMarker][semeColore]
-    #print
-    #print 'Risultato: ' + str(risultato)
-    # definizione della funzione esito che indice se la scelta fatta e' giusta
-    def esito(resp):
-        if int(resp)==risultato:
-            return True
-        else:
-            return False
 
     # 4. Visualizza marker e disposizione
 
     # CONSOLE
-    def printcolor(text, color=7): # funzione per stampare testo a colori sulla console
-        if color==0:
-            colorindex = 1
-        if color==1:
-            colorindex = 2
-        if color==2:
-            colorindex = 4
-        if color==7:
-            colorindex = 7
-        colorstring  ='\033[1;3%dm%s\033[1;m' % (colorindex, text)
-        print colorstring,
+
     #Marker
     print
     printcolor('************************************', semeMarker)
@@ -206,13 +319,9 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
     print
     print      '------------------------------------'
     print
-    #printcolor('     0     ')
-    #printcolor(            '     1     ')
-    #printcolor(                        '     2     ')
-    #print
-    #print nome[0],nome[1],nome[2]
 
     # RGB MATRIX
+    
     # impostazione elementi non variabili durante un punto
     # Colori-testi 0-1-2
     RGBnome0 = RGBtxtTxt[elenco[0]]
@@ -228,14 +337,10 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
     startTime=time.time() # invece di far partire il timer prendo il tempo di inizio
 
     # 6. Attendi la risposta
-    print
-    #print countDown,
     rispostaA= -2 # indica risposta non data
     rispostaB= -2 # indica risposta non data
-    #risposta = raw_input("    risposta: ")
 
     while True: # Ciclo del PUNTO. Uscita quando uno indovina o quando rispondono entrambi o quando finisce il tempo (controllo alla fine)
-        # pulisce la matrice offline da comporre
 
         #aggiornamento tempo
         tempoTrascorso = time.time() - startTime
@@ -298,10 +403,10 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
             RGBtimeStrB = str(countDown) # aggiorna il tempo B se non ha premuto pulsanti
 
         # scrivi sul display RGB composizione all'interno del ciclo del punto
-        offline_matrix.Clear()
+        offline_matrix.Clear() # pulisce la matrice offline da comporre
         setRGBpart1()
         setRGBpart2()
-        offline_matrix = matrix.SwapOnVSync(offline_matrix)
+        offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
 
         # attesa, da tarare
         time.sleep(0.05)
@@ -321,57 +426,20 @@ while True: # ciclo della PARTITA. Uscita quando si vince la partita (controlo a
         pntA += 1 # incrementa punteggio A
     if winB:
         pntB += 1 # incrementa punteggio B
-    textpntA = '%d                 ' % pntA
-    textpntB = '                 %d' % pntB
-    textpntAB = textpntA + textpntB
+    
+    # esito del punto su console
+    CSLesitoPnt()
+    time.sleep(0.5)
+    
+    # esito del punto su RGB
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    setRGBpart1()
+    setRGBpart2()
+    RGBesitoPnt()
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    time.sleep(2)
 
-    # possibili esiti:
-    # 1. risposta giusta contemporanea di entrambi
-    if winA and winB:
-        printcolor('************************************'); print
-        printcolor('*  RISPOSTA ESATTA CONTEMPORANEA!  *'); print
-        printcolor('************************************'); print
-    # 2. risposta giusta di A
-    elif winA:
-        printcolor('************************************'); print
-        printcolor('*   RISPOSTA ESATTA GIOCATORE A!   *'); print
-        printcolor('************************************'); print
-    # 3. risposta giusta di B
-    elif winB:
-        printcolor('************************************'); print
-        printcolor('*   RISPOSTA ESATTA GIOCATORE B!   *'); print
-        printcolor('************************************'); print
-    # 4. nessuno ha risposto giusto
-    else:
-        # nessuno ha risposto
-        if ((not pressA) and (not pressB)):
-            printcolor('************************************'); print
-            printcolor('*           TEMPO SCADUTO!         *'); print
-            printcolor('*              sveglia!            *'); print
-            printcolor('************************************'); print
-        # ha risposto solo A, sbagliando
-        elif pressA and not pressB:
-            print      '------------------------------------'
-            print      '       A: RISPOSTA SBAGLIATA        '
-            print      '       B: TEMPO SCADUTO             '
-            print      '------------------------------------'
-        # ha risposto solo B, sbagliando
-        elif pressB and not pressA:
-            print      '------------------------------------'
-            print      '       A: TEMPO SCADUTO             '
-            print      '       B: RISPOSTA SBAGLIATA        '
-            print      '------------------------------------'
-        # hanno risposto entrambi sbagliando
-        else:
-            print      '------------------------------------'
-            print      '     TUTTE RISPOSTE SBAGLIATE       '
-            print      '             merdacce!              '
-            print      '------------------------------------'
-
-    # stampa i punteggi
-    print
-    printcolor(textpntAB); print
-
+    # esito della partita
     if pntA==pntMax or pntB==pntMax:
         time.sleep(0.5)
         print
