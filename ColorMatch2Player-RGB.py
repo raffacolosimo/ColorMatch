@@ -390,7 +390,7 @@ while True: # ciclo delle partite. Non si esce mai
             if (not pressB) and (btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
                 pressB = True
                 # aggiorna per l'ultima volta il suo timer
-                RGBtimeStrA = '%03.1f' % countDown 
+                RGBtimeStrB = '%03.1f' % countDown 
                 # controllo pressione multipla
                 if (btnB_R.is_pressed and btnB_G.is_pressed) or (btnB_R.is_pressed and btnB_B.is_pressed) or (btnB_G.is_pressed and btnB_B.is_pressed):
                     rispostaB=-1 # ha imbrogliato
