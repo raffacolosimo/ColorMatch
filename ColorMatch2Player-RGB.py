@@ -25,11 +25,11 @@ import pygame.mixer
 print 'importato mixer'
 pygame.mixer.init()
 
-sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/baby_x.wav")
+sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/ding1.wav")
 sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer.wav")
 print 'suoni caricati'
-#sound1.play()
-#print 'riproduzione suono1 '
+sound1.play()
+print 'riproduzione suono1 '
 
 
 #0. Importazione librerie
