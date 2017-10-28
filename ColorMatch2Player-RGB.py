@@ -28,8 +28,8 @@ pygame.mixer.init()
 sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/baby_x.wav")
 sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer.wav")
 print 'suoni caricati'
-sound1.play()
-print 'riproduzione suono1 '
+#sound1.play()
+#print 'riproduzione suono1 '
 
 
 #0. Importazione librerie
@@ -91,10 +91,12 @@ font1 = graphics.Font()
 font2 = graphics.Font()
 font3 = graphics.Font()
 font4 = graphics.Font()
+font5 = graphics.Font()
 font1.LoadFont("./fonts/6x10.bdf")  # per nomi dei colori
 font2.LoadFont("./fonts/5x7.bdf")   # per messaggio di esito
 font3.LoadFont("./fonts/4x6.bdf")   # per i tempi
 font4.LoadFont("./fonts/9x18.bdf")  # per punteggi
+font5.LoadFont("./fonts/9x18B.bdf")  # per punteggi
 #COLORI GENERICI
 RGBColor = [graphics.Color(255, 0, 0), graphics.Color(0, 255, 0), graphics.Color(0, 0, 255)] # colori R-G-B per ledmatrix
 RGBColBlack = graphics.Color(0, 0, 0)
@@ -301,20 +303,20 @@ def printcolor(text, color=7): # funzione per stampare testo a colori sulla cons
 
 #   1.b Animazione iniziale. COLOR MATCH
 def RGBIntroScreen():
-    offline_matrix.Clear() # pulisce la matrice offline da comporre
     COLORfont = font4
+    MATCHfont = font5
     sizeH = 9
-    let3X=int(16-sizeH/2)
-    let2X=let3 - sizeH
-    let4X=let3 + sizeH
-    let1X=let2 - sizeH
-    let5X=let4 + sizeH
-    COLORX = [let1X,let2X,let3X,let4X,let5X]
-    COLORY = [15,15,15,15,15]
-    COLcolor [RGB_Rosso,RGB_Giallo,RGB_Verde,RGB_Viola,RGB_Blu]
+    let3X=int(31-sizeH/2)
+    let2X=let3X - sizeH
+    let4X=let3X + sizeH
+    let1X=let2X - sizeH
+    let5X=let4X + sizeH
+    COLORX  = [let1X,let2X,let3X,let4X,let5X]
+    COLORY  = [14,14,14,14,14]
+    COLcolor= [RGB_Rosso,RGB_Giallo,RGB_Verde,RGB_Viola,RGB_Blu]
 
     MATCHX  = [let1X,let2X,let3X,let4X,let5X]
-    MATCHY  = [32,32,32,32,32]
+    MATCHY  = [28,28,28,28,28]
     MATcolor= [RGB_Rosso,RGB_Giallo,RGB_Verde,RGB_Viola,RGB_Blu]
 
     # scritta COLOR
@@ -325,29 +327,51 @@ def RGBIntroScreen():
     graphics.DrawText(offline_matrix, COLORfont, COLORX[4], COLORY[4], COLcolor[4], 'R')
 
     # scritta MATCH
-    graphics.DrawText(offline_matrix, COLORfont, MATCHX[0], MATCHY[0], MATcolor[0], 'M')
-    graphics.DrawText(offline_matrix, COLORfont, MATCHX[1], MATCHY[1], MATcolor[1], 'A')
-    graphics.DrawText(offline_matrix, COLORfont, MATCHX[2], MATCHY[2], MATcolor[2], 'T')
-    graphics.DrawText(offline_matrix, COLORfont, MATCHX[3], MATCHY[3], MATcolor[3], 'C')
-    graphics.DrawText(offline_matrix, COLORfont, MATCHX[4], MATCHY[4], MATcolor[4], 'H')
-
-    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    graphics.DrawText(offline_matrix, MATCHfont, MATCHX[0], MATCHY[0], MATcolor[0], 'M')
+    graphics.DrawText(offline_matrix, MATCHfont, MATCHX[1], MATCHY[1], MATcolor[1], 'A')
+    graphics.DrawText(offline_matrix, MATCHfont, MATCHX[2], MATCHY[2], MATcolor[2], 'T')
+    graphics.DrawText(offline_matrix, MATCHfont, MATCHX[3], MATCHY[3], MATcolor[3], 'C')
+    graphics.DrawText(offline_matrix, MATCHfont, MATCHX[4], MATCHY[4], MATcolor[4], 'H')
+    return
 
 #  Premi per un tasto per iniziare
 def RGBPressToStart():
+    PRESSfont = font2
+    font2L=5
+    PRESScolor = RGBColWhite
+    stringa1 = 'premi'
+    stringa1X = 32 - int(font2L*len(stringa1)/2)
+    stringa1Y = 12
+    stringa2 = 'un pulsante'
+    stringa2X = 32 - int(font2L*len(stringa2)/2)
+    stringa2Y = 19
+    stringa3 = 'per giocare'
+    stringa3X = 32 - int(font2L*len(stringa3)/2)
+    stringa3Y = 26
+    graphics.DrawText(offline_matrix, PRESSfont, stringa1X, stringa1Y, PRESScolor, stringa1)
+    graphics.DrawText(offline_matrix, PRESSfont, stringa2X, stringa2Y, PRESScolor, stringa2)
+    graphics.DrawText(offline_matrix, PRESSfont, stringa3X, stringa3Y, PRESScolor, stringa3)
+    
+    return
 
 
 #   1.c Schermata di partenza: Pronti? 3-2-1
 def RGBReadySetGo():
-
+    return
 
 
 
 
 while True: # ciclo delle partite. Non si esce mai
 
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
     RGBIntroScreen()
-    time.sleep(2)
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    time.sleep(4)
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    RGBPressToStart()
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    time.sleep(4)
 
     # Punteggio dei giocatori
     pntA = 0
