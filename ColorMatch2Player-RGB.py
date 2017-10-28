@@ -19,6 +19,19 @@
 #   7a Schermata esito su RGB matrix: Vince A-B, Pari!, A: risposta errata B: tempo scaduto (o viceversa), TEMPO SCADUTO!
 # 8 Se la partita non e' finita torna al punto 0.b
 
+
+print 'inizio'
+import pygame.mixer
+print 'importato mixer'
+pygame.mixer.init()
+
+sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/baby_x.wav")
+sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer.wav")
+print 'suoni caricati'
+sound1.play()
+print 'riproduzione suono1 '
+
+
 #0. Importazione librerie
 import random  # per estrarre a caso i colori e le combinazioni
 import time    # per gestire il tempo trascorso
@@ -58,8 +71,10 @@ risultato = '' # varia per ogni punto
 # definizione della funzione esito che indice se la scelta fatta e' giusta
 def esito(resp):
     if int(resp)==risultato:
+        sound1.play()
         return True
     else:
+        sound2.play()
         return False
 
 # 1.a impostazioni per il ledmatrix
