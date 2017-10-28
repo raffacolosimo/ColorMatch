@@ -5,10 +5,10 @@
 # Bisogna individuare il colore di una scritta che riporta il nome di un altro colore
 
 # 0. Impostazione librerie
-#   0.a Animazione iniziale. COLOR MATCH - Premi per un tasto per iniziare
-#   0.b Schermata di partenza: Pronti? 3-2-1
 # 1. Impostazione matrici e vettori
 #   1.a impostazione parametri e funzioni per Led matrix
+#   1.b Animazione iniziale. COLOR MATCH - Premi per un tasto per iniziare
+#   1.c Schermata di partenza: Pronti? 3-2-1
 # 2. Estrazione semi
 # 3. Calcolo risultato
 # 4. Visualizza marker e disposizione su console
@@ -62,7 +62,7 @@ pntMax = 3
 tempoMax= 5
 # flag di pressione pulsante
 pressA = False # indica se ha risposto. Non si puo' dare piu' di una risposta
-pressB = False 
+pressB = False
 winA = False
 winB = False
 
@@ -98,6 +98,14 @@ font4.LoadFont("./fonts/9x18.bdf")  # per punteggi
 #COLORI GENERICI
 RGBColor = [graphics.Color(255, 0, 0), graphics.Color(0, 255, 0), graphics.Color(0, 0, 255)] # colori R-G-B per ledmatrix
 RGBColBlack = graphics.Color(0, 0, 0)
+RGBColWhite = graphics.Color(255, 255, 255)
+# per schermata intro
+RGB_Rosso = graphics.Color(255,   0,   0)
+RGB_Giallo= graphics.Color(255, 255,   0)
+RGB_Verde = graphics.Color(  0, 255,   0)
+RGB_Viola = graphics.Color(  0, 255, 255)
+RGB_Blu   = graphics.Color(  0,   0, 255)
+
 #COLORI-TESTI
 RGBtxtPos = [[0, 7],[34, 7], [17, 16]]                      # posizioni H-V delle scritte dei colori
 RGBtxtTxt = [nome[0].strip(), nome[1].strip(), nome[2].strip()]  # nomi dei colori presi da quelli per la console ma senza gli spazi
@@ -105,7 +113,7 @@ RGBtxtTxt = [nome[0].strip(), nome[1].strip(), nome[2].strip()]  # nomi dei colo
 RGBcolore0 = RGBColor[0] # solo per inizializzare il tipo
 RGBcolore1 = RGBColor[1]
 RGBcolore2 = RGBColor[2]
-RGBnome0 = RGBtxtTxt[0]  # solo per inizializzare 
+RGBnome0 = RGBtxtTxt[0]  # solo per inizializzare
 RGBnome1 = RGBtxtTxt[1]
 RGBnome2 = RGBtxtTxt[2]
 #MARKER
@@ -227,7 +235,6 @@ def RGBesitoPnt():
             RGBesitoTxt1 = 'TUTTO SBAGLIATO'
             RGBesitoPosH1 = 32 - int(4*len(RGBesitoTxt1)/2)
             graphics.DrawText(offline_matrix, font3, RGBesitoPosH1, 11, RGBtimeColNrm, RGBesitoTxt1)
-
 def CSLesitoPnt():
     # 1. risposta giusta contemporanea di entrambi
     if winA and winB:
@@ -280,7 +287,6 @@ def CSLesitoPnt():
     textpntAB = textpntA + textpntB
     print
     printcolor(textpntAB); print
-
 def printcolor(text, color=7): # funzione per stampare testo a colori sulla console
     if color==0:
         colorindex = 1
@@ -293,7 +299,55 @@ def printcolor(text, color=7): # funzione per stampare testo a colori sulla cons
     colorstring  ='\033[1;3%dm%s\033[1;m' % (colorindex, text)
     print colorstring,
 
+#   1.b Animazione iniziale. COLOR MATCH
+def RGBIntroScreen():
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    COLORfont = font4
+    sizeH = 9
+    let3X=int(16-sizeH/2)
+    let2X=let3 - sizeH
+    let4X=let3 + sizeH
+    let1X=let2 - sizeH
+    let5X=let4 + sizeH
+    COLORX = [let1X,let2X,let3X,let4X,let5X]
+    COLORY = [15,15,15,15,15]
+    COLcolor [RGB_Rosso,RGB_Giallo,RGB_Verde,RGB_Viola,RGB_Blu]
+
+    MATCHX  = [let1X,let2X,let3X,let4X,let5X]
+    MATCHY  = [32,32,32,32,32]
+    MATcolor= [RGB_Rosso,RGB_Giallo,RGB_Verde,RGB_Viola,RGB_Blu]
+
+    # scritta COLOR
+    graphics.DrawText(offline_matrix, COLORfont, COLORX[0], COLORY[0], COLcolor[0], 'C')
+    graphics.DrawText(offline_matrix, COLORfont, COLORX[1], COLORY[1], COLcolor[1], 'O')
+    graphics.DrawText(offline_matrix, COLORfont, COLORX[2], COLORY[2], COLcolor[2], 'L')
+    graphics.DrawText(offline_matrix, COLORfont, COLORX[3], COLORY[3], COLcolor[3], 'O')
+    graphics.DrawText(offline_matrix, COLORfont, COLORX[4], COLORY[4], COLcolor[4], 'R')
+
+    # scritta MATCH
+    graphics.DrawText(offline_matrix, COLORfont, MATCHX[0], MATCHY[0], MATcolor[0], 'M')
+    graphics.DrawText(offline_matrix, COLORfont, MATCHX[1], MATCHY[1], MATcolor[1], 'A')
+    graphics.DrawText(offline_matrix, COLORfont, MATCHX[2], MATCHY[2], MATcolor[2], 'T')
+    graphics.DrawText(offline_matrix, COLORfont, MATCHX[3], MATCHY[3], MATcolor[3], 'C')
+    graphics.DrawText(offline_matrix, COLORfont, MATCHX[4], MATCHY[4], MATcolor[4], 'H')
+
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+
+#  Premi per un tasto per iniziare
+def RGBPressToStart():
+
+
+#   1.c Schermata di partenza: Pronti? 3-2-1
+def RGBReadySetGo():
+
+
+
+
+
 while True: # ciclo delle partite. Non si esce mai
+
+    RGBIntroScreen()
+    time.sleep(2)
 
     # Punteggio dei giocatori
     pntA = 0
@@ -344,7 +398,7 @@ while True: # ciclo delle partite. Non si esce mai
         print
 
         # RGB MATRIX
-        
+
         # impostazione elementi non variabili durante un punto
         # Colori-testi 0-1-2
         RGBnome0 = RGBtxtTxt[elenco[0]] # corrisponde a nome ma senza spazi
@@ -354,7 +408,7 @@ while True: # ciclo delle partite. Non si esce mai
         RGBcolore1 = RGBColor[colore1]
         RGBcolore2 = RGBColor[colore2]
         # elementi variabili, ma con valore iniziale certo
-        RGBtimeColorA = RGBtimeColNrm 
+        RGBtimeColorA = RGBtimeColNrm
         RGBtimeColorB = RGBtimeColNrm
         RGBscoreColorA = RGBscoreColNrm
         RGBscoreColorB = RGBscoreColNrm
@@ -378,7 +432,7 @@ while True: # ciclo delle partite. Non si esce mai
             if (not pressA) and (btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
                 pressA = True # A ha risposto
                 # aggiorna per l'ultima volta il suo timer
-                RGBtimeStrA = '%03.1f' % countDown 
+                RGBtimeStrA = '%03.1f' % countDown
                 # controllo pressione multipla
                 if (btnA_R.is_pressed and btnA_G.is_pressed) or (btnA_R.is_pressed and btnA_B.is_pressed) or (btnA_G.is_pressed and btnA_B.is_pressed):
                     rispostaA=-1 # ha imbrogliato
@@ -405,7 +459,7 @@ while True: # ciclo delle partite. Non si esce mai
             if (not pressB) and (btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed): # il giocatore A ha risposto per la prima volta, sono ignorate le altre
                 pressB = True
                 # aggiorna per l'ultima volta il suo timer
-                RGBtimeStrB = '%03.1f' % countDown 
+                RGBtimeStrB = '%03.1f' % countDown
                 # controllo pressione multipla
                 if (btnB_R.is_pressed and btnB_G.is_pressed) or (btnB_R.is_pressed and btnB_B.is_pressed) or (btnB_G.is_pressed and btnB_B.is_pressed):
                     rispostaB=-1 # ha imbrogliato
@@ -432,12 +486,12 @@ while True: # ciclo delle partite. Non si esce mai
                 if countDown <= 0:
                     RGBtimeStrA = '---'
                 else:
-                    RGBtimeStrA = '%03.1f' % countDown 
+                    RGBtimeStrA = '%03.1f' % countDown
             if not pressB: # aggiorna il tempo B se non ha premuto pulsanti
                 if countDown <= 0:
                     RGBtimeStrB = '---'
                 else:
-                    RGBtimeStrB = '%03.1f' % countDown 
+                    RGBtimeStrB = '%03.1f' % countDown
 
             # scrivi sul display RGB composizione all'interno del ciclo del punto
             offline_matrix.Clear() # pulisce la matrice offline da comporre
@@ -463,11 +517,11 @@ while True: # ciclo delle partite. Non si esce mai
             pntA += 1 # incrementa punteggio A
         if winB:
             pntB += 1 # incrementa punteggio B
-        
+
         # esito del punto su console
         CSLesitoPnt()
         #time.sleep(0.5)
-        
+
         # esito del punto su RGB
         offline_matrix.Clear() # pulisce la matrice offline da comporre
         #setRGBpart1()
