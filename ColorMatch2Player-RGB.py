@@ -237,6 +237,7 @@ def RGBesitoPnt():
             RGBesitoTxt1 = 'TUTTO SBAGLIATO'
             RGBesitoPosH1 = 32 - int(4*len(RGBesitoTxt1)/2)
             graphics.DrawText(offline_matrix, font3, RGBesitoPosH1, 11, RGBtimeColNrm, RGBesitoTxt1)
+
 def CSLesitoPnt():
     # 1. risposta giusta contemporanea di entrambi
     if winA and winB:
@@ -289,6 +290,45 @@ def CSLesitoPnt():
     textpntAB = textpntA + textpntB
     print
     printcolor(textpntAB); print
+    return
+
+def CSLesitoMatch(puntiA, puntiB):
+    print
+    print     '         PARTITA TERMINATA   '
+    if puntiA==pntMax:
+        print '        VINCE IL GIOCATORE A '
+    elif puntiB==pntMax:
+        print '        VINCE IL GIOCATORE B '
+    else:
+        print '               ERRORE        '
+    return
+
+def RGBesitoMatch(puntiA, puntiB, puntiMax):
+    ESITOfont = font1
+    fontL = 6 # font 6x10
+    ESITOcolor = RGBColWhite
+    stringa1 = 'VINCE'
+    stringa1X = 32 - int(fontL*len(stringa1)/2)
+    stringa1Y = 12
+    stringa2 = 'LA PARTITA'
+    stringa2X = 32 - int(fontL*len(stringa2)/2)
+    stringa2Y = 19
+    graphics.DrawText(offline_matrix, PRESSfont, stringa1X, stringa1Y, PRESScolor, stringa1)
+    graphics.DrawText(offline_matrix, PRESSfont, stringa2X, stringa2Y, PRESScolor, stringa2)
+    stringa3  = ''
+    stringa3Y = 32
+    WINNERfont = font5
+    fontL = 9  # font 9x18Bold
+    WINNERcolor = RGBColWhite
+    if puntiA==pntMax:
+        stringa3  = 'A'
+        stringa3X = 0
+    elif puntiB==pntMax:
+        stringa3  = 'B'
+        stringa3X = 64-fontL
+    graphics.DrawText(offline_matrix, WINNERfont, stringa3X, stringa3Y, WINNERcolor, stringa3)
+    return
+
 def printcolor(text, color=7): # funzione per stampare testo a colori sulla console
     if color==0:
         colorindex = 1
@@ -300,17 +340,18 @@ def printcolor(text, color=7): # funzione per stampare testo a colori sulla cons
         colorindex = 7
     colorstring  ='\033[1;3%dm%s\033[1;m' % (colorindex, text)
     print colorstring,
+    return
 
 #   1.b Animazione iniziale. COLOR MATCH
 def RGBIntroScreen():
     COLORfont = font4
     MATCHfont = font5
-    sizeH = 9
-    let3X=int(31-sizeH/2)
-    let2X=let3X - sizeH
-    let4X=let3X + sizeH
-    let1X=let2X - sizeH
-    let5X=let4X + sizeH
+    sizeL = 9
+    let3X=int(31-sizeL/2)
+    let2X=let3X - sizeL
+    let4X=let3X + sizeL
+    let1X=let2X - sizeL
+    let5X=let4X + sizeL
     COLORX  = [let1X,let2X,let3X,let4X,let5X]
     COLORY  = [14,14,14,14,14]
     COLcolor= [RGB_Rosso,RGB_Giallo,RGB_Verde,RGB_Viola,RGB_Blu]
@@ -339,39 +380,77 @@ def RGBPressToStart():
     PRESSfont = font2
     font2L=5
     PRESScolor = RGBColWhite
-    stringa1 = 'premi'
+    stringa1 = 'PREMI'
     stringa1X = 32 - int(font2L*len(stringa1)/2)
     stringa1Y = 12
-    stringa2 = 'un pulsante'
+    stringa2 = 'UN PULSANTE'
     stringa2X = 32 - int(font2L*len(stringa2)/2)
     stringa2Y = 19
-    stringa3 = 'per giocare'
+    stringa3 = 'PER GIOCARE'
     stringa3X = 32 - int(font2L*len(stringa3)/2)
     stringa3Y = 26
     graphics.DrawText(offline_matrix, PRESSfont, stringa1X, stringa1Y, PRESScolor, stringa1)
     graphics.DrawText(offline_matrix, PRESSfont, stringa2X, stringa2Y, PRESScolor, stringa2)
     graphics.DrawText(offline_matrix, PRESSfont, stringa3X, stringa3Y, PRESScolor, stringa3)
-    
     return
-
 
 #   1.c Schermata di partenza: Pronti? 3-2-1
 def RGBReadySetGo():
+    RSTfont = font1
+    fontL   = 6
+    RTScolor = RGBColWhite
+    stringa1 = '3'
+    stringa1X = 32 - int(font2L*len(stringa1)/2)
+    RSTY = 18
+    stringa2 = '2'
+    stringa2X = 32 - int(font2L*len(stringa2)/2)
+    stringa3 = '1'
+    stringa3X = 32 - int(font2L*len(stringa3)/2)
+    graphics.DrawText(offline_matrix, PRESSfont, stringa2X, stringa2Y, PRESScolor, stringa2)
+    graphics.DrawText(offline_matrix, PRESSfont, stringa3X, stringa3Y, PRESScolor, stringa3)
+
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    graphics.DrawText(offline_matrix, RTSfont, stringa1X, RSTY, RSTcolor, stringa1)
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    time.sleep(1)
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    graphics.DrawText(offline_matrix, RTSfont, stringa2X, RSTY, RSTcolor, stringa2)
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    time.sleep(1)
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    graphics.DrawText(offline_matrix, RTSfont, stringa3X, RSTY, RSTcolor, stringa3)
+    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    time.sleep(1)
     return
 
-
-
+def CSLReadySetGo():
+    print
+    print     '             Pronti....'
+    return
 
 while True: # ciclo delle partite. Non si esce mai
 
-    offline_matrix.Clear() # pulisce la matrice offline da comporre
-    RGBIntroScreen()
-    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
-    time.sleep(4)
-    offline_matrix.Clear() # pulisce la matrice offline da comporre
-    RGBPressToStart()
-    offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
-    time.sleep(4)
+    while True: # ciclo della schermata iniziale. Si esce premendo un pulsante
+        exitStartScreen = False
+        for i in range(100): # ciclo della scritta COLOR MATCH
+            offline_matrix.Clear() # pulisce la matrice offline da comporre
+            RGBIntroScreen()
+            offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+            if (btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed or btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed):
+                exitStartScreen = True
+                break
+            time.sleep(0.1)
+        break if exitStartScreen
+
+        for i in range(100): # ciclo della scritta PREMI PER INIZIARE
+            offline_matrix.Clear() # pulisce la matrice offline da comporre
+            RGBPressToStart()
+            offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+            if (btnA_R.is_pressed or btnA_G.is_pressed or btnA_B.is_pressed or btnB_R.is_pressed or btnB_G.is_pressed or btnB_B.is_pressed):
+                exitStartScreen = True
+                break
+            time.sleep(0.1)
+        break if exitStartScreen
 
     # Punteggio dei giocatori
     pntA = 0
@@ -550,26 +629,22 @@ while True: # ciclo delle partite. Non si esce mai
         offline_matrix.Clear() # pulisce la matrice offline da comporre
         #setRGBpart1()
         setRGBpart2()
-        RGBesitoPnt() # sostituisce la parte 1
+        RGBesitoPnt() # sostituisce la parte 1, scritta dopo e' megilo
         offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
-        time.sleep(2.5)
+        time.sleep(2)
+
 
         # esito della partita
-        if pntA==pntMax or pntB==pntMax:
+        if pntA==pntMax or pntB==pntMax: # se un giocatore ha vinto si visualizza l'esito e si esce
             time.sleep(0.5)
-            print
-            print     '         PARTITA TERMINATA'
-            if pntA==pntMax:
-                print '        VINCE IL GIOCATORE A '
-            else:
-                print '        VINCE IL GIOCATORE B '
+            CSLesitoMatch(pntA, pntB)
+            RGBesitoMAtch(pntA, pntB)
             time.sleep(3)
             break
-        else:
-            time.sleep(3)
-            print
-            print     '             Pronti....'
-            time.sleep(1)
+        else:                            # altrimenti si continua
+            time.sleep(2)
+            CSLReadySetGo()
+            RGBReadySetGo()
 
 
 
