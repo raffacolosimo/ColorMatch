@@ -25,13 +25,15 @@ import pygame.mixer
 print 'importato mixer'
 pygame.mixer.init()
 
-sound0 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/test1.wav")   # suono per test iniziale
+soundTest  = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/test1.wav")        # suono per test iniziale
+soundStart = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/readysetgo.wav")   # suono per inizio partita
 sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/ding1.wav")   # suono per quando si indovina
 sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer1.wav") # suono per quando si sbaglia
 sound3 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/tada1.wav")   # suono per quando si vince
+soundTooLate = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/toolate.wav")   # suono per tempo scaduto
 
 print 'suoni caricati'
-sound0.play()
+soundTest.play()
 print 'riproduzione suono test'
 
 
@@ -460,6 +462,10 @@ while True: # ciclo delle partite. Non si esce mai
         if exitStartScreen:
             break
 
+    offline_matrix.Clear() # pulisce la matrice offline da comporre
+    matrix.SwapOnVSync(offline_matrix) # aggiorna il display
+    soundStart.play(0)
+    time.sleep(2.7)
 
     # Punteggio dei giocatori
     pntA = 0
@@ -628,6 +634,7 @@ while True: # ciclo delle partite. Non si esce mai
                 break
             if tempoTrascorso > tempoMax: # se il tempo e' scaduto
                 timeout=True
+                soundTooLate.play(0)
                 break
 
         # 7. Calcola l'esito
@@ -646,7 +653,7 @@ while True: # ciclo delle partite. Non si esce mai
         setRGBpart2()
         RGBesitoPnt() # sostituisce la parte 1, scritta dopo e' megilo
         offline_matrix = matrix.SwapOnVSync(offline_matrix) # aggiorna il display
-        time.sleep(2)
+        time.sleep(3.6)
 
 
         # esito della partita
