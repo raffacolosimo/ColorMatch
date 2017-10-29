@@ -25,11 +25,13 @@ import pygame.mixer
 print 'importato mixer'
 pygame.mixer.init()
 
-sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/ding1.wav")
-sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer.wav")
+sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/ding1.wav")   # suono per quando si indovina
+sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer1.wav") # suono per quando si sbaglia
+sound3 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/tada1.wav")   # suono per quando si vince
+
 print 'suoni caricati'
-sound1.play()
-print 'riproduzione suono1 '
+sound3.play()
+print 'riproduzione suono test'
 
 
 #0. Importazione librerie
@@ -329,6 +331,7 @@ def RGBesitoMatch(puntiA, puntiB):
         stringa3X = 64-fontL
     graphics.DrawText(offline_matrix, WINNERfont, stringa3X, stringa3Y, WINNERcolor, stringa3)
     graphics.DrawLine(offline_matrix, 0, 29, 63, 29, WINNERcolor)
+    sound3.play(0)
     return
 
 def printcolor(text, color=7): # funzione per stampare testo a colori sulla console
@@ -650,7 +653,7 @@ while True: # ciclo delle partite. Non si esce mai
             time.sleep(0.5)
             CSLesitoMatch(pntA, pntB)
             RGBesitoMatch(pntA, pntB)
-            time.sleep(4)
+            time.sleep(8)
             break
 
 
