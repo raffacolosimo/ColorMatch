@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=COLORMATCH
+Comment="Python program"
+Exec=/home/pi/Documents/ColorMatch/GoColorMatch.sh
+Hidden=false
+NoDisplay=false
+Terminal=false
+
