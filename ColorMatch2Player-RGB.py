@@ -25,12 +25,13 @@ import pygame.mixer
 print 'importato mixer'
 pygame.mixer.init()
 
+sound0 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/test1.wav")   # suono per test iniziale
 sound1 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/ding1.wav")   # suono per quando si indovina
 sound2 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/buzzer1.wav") # suono per quando si sbaglia
 sound3 = pygame.mixer.Sound("/home/pi/Documents/ColorMatch/sounds/tada1.wav")   # suono per quando si vince
 
 print 'suoni caricati'
-sound3.play()
+sound0.play()
 print 'riproduzione suono test'
 
 
@@ -653,7 +654,7 @@ while True: # ciclo delle partite. Non si esce mai
             time.sleep(0.5)
             CSLesitoMatch(pntA, pntB)
             RGBesitoMatch(pntA, pntB)
-            time.sleep(8)
+            time.sleep(6)
             break
 
 
